@@ -1,5 +1,8 @@
 # App Permission Info
 
+[![PowerShell 7+](https://img.shields.io/badge/PowerShell-7%2B-5391FE?logo=powershell&logoColor=white)](https://github.com/PowerShell/PowerShell)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+
 PowerShell report script for Microsoft Entra applications and enterprise apps.
 
 ## What this script does
