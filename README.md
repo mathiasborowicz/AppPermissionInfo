@@ -26,6 +26,9 @@ PowerShell report script for Microsoft Entra applications and enterprise apps.
 - Exports CSV by default.
 - Optionally generates an interactive HTML report with search and filters.
 
+## Example Report
+![Alt text](/Resources/ExampleReport.png)
+
 ## Prerequisites
 
 Install Microsoft Graph PowerShell modules:
@@ -37,7 +40,6 @@ Install Microsoft Graph PowerShell modules:
 The script connects to Graph and requests these scopes:
 
 - Application.Read.All
-- AppRoleAssignment.Read.All
 - DelegatedPermissionGrant.Read.All
 
 ## Script file
