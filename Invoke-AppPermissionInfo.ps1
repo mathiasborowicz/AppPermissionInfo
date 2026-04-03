@@ -29,10 +29,7 @@ Copyright (c) 2026 Mathias Borowicz.
 Licensed under GNU General Public License v3.0 (GPL-3.0).
 #>
 
-# Requires modules:
-#   Microsoft.Graph.Authentication
-#   Microsoft.Graph.Applications
-#   Microsoft.Graph.Identity.SignIns
+#Requires -Version 7.0
 
 param(
     [string]$ReportPath = (Join-Path -Path $PSScriptRoot -ChildPath "AppPermissionReport.csv"),
@@ -40,22 +37,45 @@ param(
     [string]$HtmlReportPath
 )
 
-$ErrorActionPreference = "Stop"
+$requiredModules = @(
+    "Microsoft.Graph.Authentication",
+    "Microsoft.Graph.Applications",
+    "Microsoft.Graph.Identity.SignIns"
+)
+
+foreach ($module in $requiredModules) {
+    if (-not (Get-Module -Name $module -ListAvailable)) {
+        Write-Host "Installing module: $module"
+        Install-Module -Name $module -Scope CurrentUser -Force -ErrorAction Stop
+    }
+
+    if (-not (Get-Module -Name $module)) {
+        Write-Host "Importing module: $module"
+        Import-Module -Name $module -ErrorAction Stop
+    }
+}
 
 $requiredScopes = @(
     "Application.Read.All",
-    "AppRoleAssignment.Read.All",
     "DelegatedPermissionGrant.Read.All"
 )
 
-try {
-    $ctx = Get-MgContext
-    if (-not $ctx) {
-        Connect-MgGraph -Scopes $requiredScopes | Out-Null
+$context = Get-MgContext
+$needsConnect = $false
+
+if (-not $context) {
+    $needsConnect = $true
+} else {
+    $missingScopes = $requiredScopes | Where-Object { $context.Scopes -notcontains $_ }
+    if ($missingScopes) {
+        Write-Host "Re-connecting: missing required scopes: $($missingScopes -join ', ')"
+        $needsConnect = $true
     }
 }
-catch {
-    Connect-MgGraph -Scopes $requiredScopes | Out-Null
+
+if ($needsConnect) {
+    Write-Host "Connecting to Microsoft Graph with required scopes: $($requiredScopes -join ', ')"
+    Connect-MgGraph -Scopes $requiredScopes -nowelcome -ErrorAction Stop
 }
 
 $resourceSpCache = @{}
@@ -100,7 +120,7 @@ function Convert-ToHtmlSafe {
     return [System.Net.WebUtility]::HtmlEncode($Value) -replace "`r?`n", "<br>"
 }
 
-$apps = Get-MgApplication -All -Property "id,appId,displayName,signInAudience,passwordCredentials,requiredResourceAccess"
+$apps = Get-MgApplication -All -Property "id,appId,displayName,signInAudience,passwordCredentials,requiredResourceAccess" -ErrorAction Stop
 $results = [System.Collections.Generic.List[object]]::new()
 $appCount = ($apps | Measure-Object).Count
 $appIndex = 0
@@ -185,7 +205,7 @@ foreach ($app in $apps) {
     }
 }
 
-$enterpriseApps = Get-MgServicePrincipal -All -Property "id,appId,displayName,signInAudience,passwordCredentials,servicePrincipalType"
+$enterpriseApps = Get-MgServicePrincipal -All -Property "id,appId,displayName,signInAudience,passwordCredentials,servicePrincipalType" -ErrorAction Stop
 $enterpriseAppCount = ($enterpriseApps | Measure-Object).Count
 $enterpriseAppIndex = 0
 
@@ -495,3 +515,5 @@ if ($GenerateHtmlReport) {
         Set-Content -Path $HtmlReportPath -Value $html -Encoding UTF8
         Write-Host "HTML report exported to: $HtmlReportPath"
 }
+
+Disconnect-MgGraph | Out-Null
