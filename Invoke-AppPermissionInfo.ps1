@@ -23,6 +23,10 @@ ReportPath with an .html extension.
 
 .EXAMPLE
 .\Invoke-AppPermissionInfo.ps1 -ReportPath "C:\Temp\AppPermissions.csv" -GenerateHtmlReport
+
+.NOTES
+Copyright (c) 2026 Mathias Borowicz.
+Licensed under GNU General Public License v3.0 (GPL-3.0).
 #>
 
 # Requires modules:
