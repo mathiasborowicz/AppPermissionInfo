@@ -59,15 +59,21 @@ Invoke-AppPermissionInfo.ps1
 
 Run with default CSV output:
 
-./Invoke-AppPermissionInfo.ps1
+```powershell
+.\Invoke-AppPermissionInfo.ps1
+```
 
 Run with custom CSV output:
 
-./Invoke-AppPermissionInfo.ps1 -ReportPath "C:\Temp\AppPermissions.csv"
+```powershell
+.\Invoke-AppPermissionInfo.ps1 -ReportPath "C:\Temp\AppPermissions.csv"
+```
 
 Run with CSV and HTML output:
 
-./Invoke-AppPermissionInfo.ps1 -ReportPath "C:\Temp\AppPermissions.csv" -GenerateHtmlReport -HtmlReportPath "C:\Temp\AppPermissions.html"
+```powershell
+.\Invoke-AppPermissionInfo.ps1 -ReportPath "C:\Temp\AppPermissions.csv" -GenerateHtmlReport -HtmlReportPath "C:\Temp\AppPermissions.html"
+```
 
 ## Output notes
 
@@ -83,4 +89,6 @@ Run with CSV and HTML output:
 
 Get script help:
 
+```powershell
 Get-Help ./Invoke-AppPermissionInfo.ps1 -Full
+```
